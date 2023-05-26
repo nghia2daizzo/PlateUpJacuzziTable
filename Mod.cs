@@ -1,5 +1,8 @@
-﻿using KitchenLib;
+﻿using KitchenData;
+using KitchenLib;
 using KitchenLib.Event;
+using KitchenLib.References;
+using KitchenLib.Utils;
 using KitchenMods;
 using System.Reflection;
 using UnityEngine;
@@ -35,6 +38,17 @@ namespace KitchenJacuzziTable
         protected override void OnInitialise()
         {
             LogWarning($"{MOD_GUID} v{MOD_VERSION} in use!");
+            UpdateUpgrades();
+        }
+
+        private void UpdateUpgrades()
+        {
+            Appliance customAppliance = GDOUtils.GetCustomGameDataObject<JacuzziTable>().GameDataObject as Appliance;
+            Appliance table = GDOUtils.GetExistingGDO(ApplianceReferences.TableLarge) as Appliance;
+            if (customAppliance != null & table != null)
+            {
+                table.Upgrades.Add(customAppliance);
+            }
         }
 
         private void AddGameData()

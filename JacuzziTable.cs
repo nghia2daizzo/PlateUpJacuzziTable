@@ -8,7 +8,6 @@ using UnityEngine;
 using ApplianceLib.Api;
 using KitchenLib.References;
 using ApplianceLib.Api.References;
-using Unity.Entities;
 
 namespace KitchenJacuzziTable
 {
@@ -30,14 +29,13 @@ namespace KitchenJacuzziTable
                 return _prefabCache;
             }
         }
-        public override PriceTier PriceTier => PriceTier.Free;
-        public override RarityTier RarityTier => RarityTier.Common;
+        public override PriceTier PriceTier => PriceTier.Expensive;
+        public override RarityTier RarityTier => RarityTier.Rare;
         public override bool IsPurchasable => true;
         public override bool IsPurchasableAsUpgrade => true;
         public override ShoppingTags ShoppingTags => ShoppingTags.FrontOfHouse | ShoppingTags.Plumbing;
         public override IEffectRange EffectRange => new CEffectRangeTableSet();
         public override IEffectCondition EffectCondition => new CEffectAlways();
-
         public override IEffectType EffectType => new CTableModifier()
         {
             OrderingModifiers = new OrderingValues() { PriceModifier = 0.2f, MessFactor = .5f }
@@ -54,12 +52,12 @@ namespace KitchenJacuzziTable
                     new Appliance.Section
                     {
                         Title = "Filthy Rich",
-                        Description = "Customers pay <color=#00FF00>20%</color> more <sprite name=\"coin\"> but make <color=#ff1111>50%</color> more <sprite name=\"mess\">"
+                        Description = "Customers pay <color=#00FF00>20%</color> more <sprite name=\"coin\"> but make <color=#ff1111>50%</color> more messes"
                     },
                     new Appliance.Section
                     {
                         Title = "Spa Treatment",
-                        Description = "Gently massages your dishes clean. Does not combine with other tables"
+                        Description = "Gently massages your dishes clean. Does not combine with other tables. Cannot use consumables"
                     }
                 }
             })
@@ -71,10 +69,11 @@ namespace KitchenJacuzziTable
             new CItemHolder(),
             GetCItemStorage(0, 16, true, true),
             new CHolderFirstIfStorage(),
-            new CChangeRestrictedReceiverKeyAfterDuration()
+            new CChangeRestrictedReceiverKeyAfterDuration
             {
                 ApplianceKey = RestrictedTransferKeys.CleanedItems
-            }
+            },
+            new CNoAttachedBonuses()
         };
 
         public override List<Appliance.ApplianceProcesses> Processes => new List<Appliance.ApplianceProcesses>()
@@ -82,7 +81,7 @@ namespace KitchenJacuzziTable
             new Appliance.ApplianceProcesses()
             {
                 Process = ((Process) GDOUtils.GetExistingGDO(ProcessReferences.Clean)),
-                Speed = 0.25f,
+                Speed = 0.4f,
                 IsAutomatic = true
             }
         };
@@ -96,7 +95,6 @@ namespace KitchenJacuzziTable
             if (!isRegistered)
             {
                 ApplyMaterials();
-                ApplyComponents();
                 isRegistered = true;
             }
         }
@@ -112,11 +110,6 @@ namespace KitchenJacuzziTable
             MaterialUtils.ApplyMaterial(Prefab, "SinkSoak/Cube.003", materials);
             materials[0] = MaterialUtils.GetExistingMaterial("Cashew");
             MaterialUtils.ApplyMaterial(Prefab, "Active/Water", materials);
-        }
-
-        private void ApplyComponents()
-        {
-
         }
     }
 }
